@@ -1,7 +1,7 @@
 <?php
 /* @var $this yii\web\View */
 /* @var $form yii\bootstrap\ActiveForm */
-/* @var $model app\models\ContactForm */
+/* @var $model app\models\ExchangeForm */
 
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
@@ -29,5 +29,11 @@ $this->params['breadcrumbs'][] = $this->title;
 	    <?php ActiveForm::end(); ?>
 
 	</div>
+
+	<?php if (Yii::$app->session->hasFlash('exchangeFormSubmitted')): ?>
+    	<div class="col-lg-7">
+    	    <h3>Ваша прибыль составила $<?= $model->profitUSD ?> (<?= $model->profitPercent ?>%)</h3>
+    	</div>
+	<?php endif ?>
     </div>
 </div>

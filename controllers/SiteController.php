@@ -31,8 +31,6 @@ class SiteController extends Controller
 	$model = new ExchangeForm();
 	if ($model->load(Yii::$app->request->post()) && $model->calculate()) {
 	    Yii::$app->session->setFlash('exchangeFormSubmitted');
-
-	    return $this->refresh();
 	}
 	return $this->render('form', [
 		    'model' => $model,

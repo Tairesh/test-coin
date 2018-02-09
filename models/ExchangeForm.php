@@ -14,7 +14,7 @@ class ExchangeForm extends Model
 
     public $amount;
     protected $dateText;
-    protected $dateUnix;
+    protected $dateTime;
     public $profitUSD;
     public $profitPercent;
 
@@ -46,9 +46,15 @@ class ExchangeForm extends Model
     public function calculate()
     {
 	if ($this->validate()) {
-	    // TODO: logic
-	    $this->profitPercent = 123;
-	    $this->profitUSD = 321;
+	    // TODO: optimization
+	    $startData = Yii::$app->coinapi->GetExchangeRate('BTC', 'USD', $this->dateTime);
+	    $currentData = Yii::$app->coinapi->GetExchangeRate('BTC', 'USD');
+
+	    $startCost = $startData->rate * $this->amount;
+	    $currentCost = $currentData->rate * $this->amount;
+
+	    $this->profitUSD = $currentCost - $startCost;
+	    $this->profitPercent = 100 * $this->profitUSD / $startCost;
 	    return true;
 	}
 	return false;
@@ -57,7 +63,8 @@ class ExchangeForm extends Model
     public function setDate($text)
     {
 	$this->dateText = $text;
-	$this->dateUnix = strtotime($text);
+	$this->dateTime = new \DateTime();
+	$this->dateTime->setTimestamp(strtotime($text));
     }
 
     public function getDate()
