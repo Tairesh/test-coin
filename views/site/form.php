@@ -6,6 +6,7 @@
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 use kartik\date\DatePicker;
+use yii\bootstrap\Alert;
 
 $this->title = 'Profit Calculator';
 $this->params['breadcrumbs'][] = $this->title;
@@ -39,12 +40,21 @@ $this->params['breadcrumbs'][] = $this->title;
 
 	    <?php ActiveForm::end(); ?>
 
-	</div>
+	    <?php if (Yii::$app->session->hasFlash('exchangeFormSubmitted')): ?>
+		<?=
+		Alert::widget([
+		    'body' => '<h3>' . ($model->profitUSD > 0 ? 'Ваша прибыль' : 'Ваш убыток') .
+		    ' составляет $' . number_format(abs($model->profitUSD), 2, '.', '&nbsp;') .
+		    ' (' . number_format(abs($model->profitPercent), 2, '.', '&nbsp;') . '%)' .
+		    '</h3>',
+		    'closeButton' => [],
+		    'options' => [
+			'class' => $model->profitUSD > 0 ? 'alert-success' : 'alert-danger',
+		    ],
+		])
 
-	<?php if (Yii::$app->session->hasFlash('exchangeFormSubmitted')): ?>
-    	<div class="col-lg-7">
-    	    <h3>Ваша прибыль составила $<?= $model->profitUSD ?> (<?= $model->profitPercent ?>%)</h3>
-    	</div>
-	<?php endif ?>
+		?>
+	    <?php endif ?>
+	</div>
     </div>
 </div>

@@ -16,7 +16,7 @@ class RateCache extends Component
     public function getRate($dateText)
     {
 	/* @var $cursor \MongoDB\Driver\Cursor */
-	$cursor = Yii::$app->db->createCommand(['date' => $dateText])->query('test');
+	$cursor = Yii::$app->db->createCommand(['date' => $dateText])->query('rates');
 	$data = null;
 	foreach ($cursor as $row) {
 	    $data = (object) $row;
@@ -35,7 +35,7 @@ class RateCache extends Component
     {
 	/* @var $command yii\mongodb\Command */
 	$command = Yii::$app->db->createCommand();
-	$command->insert('test', ['date' => $dateText, 'rate' => $rate]);
+	$command->insert('rates', ['date' => $dateText, 'rate' => $rate]);
     }
 
 }
