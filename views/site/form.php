@@ -5,6 +5,7 @@
 
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
+use kartik\date\DatePicker;
 
 $this->title = 'Profit Calculator';
 $this->params['breadcrumbs'][] = $this->title;
@@ -20,7 +21,17 @@ $this->params['breadcrumbs'][] = $this->title;
 
 	    <?= $form->field($model, 'amount')->textInput(['autofocus' => true]) ?>
 
-	    <?= $form->field($model, 'date') ?>
+	    <?=
+	    $form->field($model, 'date')->widget(DatePicker::className(), [
+		'options' => ['placeholder' => 'Выберите дату...'],
+		'pluginOptions' => [
+		    'format' => 'dd-mm-yyyy',
+		    'todayHighlight' => true,
+		    'autoclose' => true,
+		]
+	    ])
+
+	    ?>
 
 	    <div class="form-group">
 		<?= Html::submitButton('Посчитать', ['class' => 'btn btn-primary', 'name' => 'submit-button']) ?>
