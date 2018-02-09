@@ -9,269 +9,26 @@ class CoinAPI extends Component
 
     public $ApiKey;
 
-    // Metadata
-    function GetExchanges()
-    {
-	$url = 'https://rest.coinapi.io/v1/exchanges';
-	return $this->CurlRequest($url);
-    }
-
-    function GetAssets()
-    {
-	$url = 'https://rest.coinapi.io/v1/assets';
-	return $this->CurlRequest($url);
-    }
-
-    function GetSymbols()
-    {
-	$url = 'https://rest.coinapi.io/v1/symbols';
-	return $this->CurlRequest($url);
-    }
-
     // Exchange Rates
-    function GetExchangeRate($asset_id_base, $asset_id_qoute, $time = null)
+    function getExchangeRate($asset_id_base, $asset_id_qoute, $time = null)
     {
 	if ($asset_id_base == null) {
-	    throw new InvalidArgumentException("asset_id_base is required");
+	    throw new \InvalidArgumentException("asset_id_base is required");
 	}
 	if ($asset_id_qoute == null) {
-	    throw new InvalidArgumentException("asset_id_qoute is required");
+	    throw new \InvalidArgumentException("asset_id_qoute is required");
 	}
 	if ($time != null) {
-	    $time = $this->FormatDateTime($time);
+	    $time = $this->formatDateTime($time);
 	    $url = 'https://rest.coinapi.io/v1/exchangerate/' . $asset_id_base . '/' . $asset_id_qoute . '?time=' . $time;
 	} else {
 	    $url = 'https://rest.coinapi.io/v1/exchangerate/' . $asset_id_base . '/' . $asset_id_qoute;
 	}
-	return $this->CurlRequest($url);
-    }
-
-    function GetExchangeRates($asset_id_base)
-    {
-	if ($asset_id_base == null) {
-	    throw new InvalidArgumentException("asset_id_base is required");
-	}
-	$url = 'https://rest.coinapi.io/v1/exchangerate/' . $asset_id_base;
-	return $this->CurlRequest($url);
-    }
-
-    // OHCLV
-    function GetPeriods()
-    {
-	$url = 'https://rest.coinapi.io/v1/ohlcv/periods';
-	return $this->CurlRequest($url);
-    }
-
-    function GetOHLCVLatest($symbol_id, $period_id, $limit = null)
-    {
-	if ($symbol_id == null) {
-	    throw new InvalidArgumentException("symbol_id is required");
-	}
-	if ($period_id == null) {
-	    throw new InvalidArgumentException("period_id is required");
-	}
-	if ($limit == null) {
-	    $url = 'https://rest.coinapi.io/v1/ohlcv/' . $symbol_id . '/latest?period_id=' . $period_id;
-	} else {
-	    $url = 'https://rest.coinapi.io/v1/ohlcv/' . $symbol_id . '/latest?period_id=' . $period_id . '&limit=' . $limit;
-	}
-	return $this->CurlRequest($url);
-    }
-
-    function GetOHLCVHistory($symbol_id, $period_id, $time_start, $time_end = null, $limit = null)
-    {
-	if ($symbol_id == null) {
-	    throw new InvalidArgumentException("symbol_id is required");
-	}
-	if ($period_id == null) {
-	    throw new InvalidArgumentException("period_id is required");
-	}
-	if ($time_start == null) {
-	    throw new InvalidArgumentException("time_start is required");
-	}
-	$time_start = $this->FormatDateTime($time_start);
-	if ($time_end == null && $limit != null) {
-	    $url = 'https://rest.coinapi.io/v1/ohlcv/' . $symbol_id . '/history?period_id=' . $period_id . '&time_start=' . $time_start . '&limit=' . $limit;
-	} else if ($limit == null && $time_end != null) {
-	    $time_end = $this->FormatDateTime($time_end);
-	    $url = 'https://rest.coinapi.io/v1/ohlcv/' . $symbol_id . '/history?period_id=' . $period_id . '&time_start=' . $time_start . '&time_end=' . $time_end;
-	    //$limit = '100';
-	} else if ($limit == null && $time_end == null) {
-	    $url = 'https://rest.coinapi.io/v1/ohlcv/' . $symbol_id . '/history?period_id=' . $period_id . '&time_start=' . $time_start;
-	} else {
-	    $time_end = $this->FormatDateTime($time_end);
-	    $url = 'https://rest.coinapi.io/v1/ohlcv/' . $symbol_id . '/history?period_id=' . $period_id . '&time_start=' . $time_start . '&time_end=' . $time_end . '&limit=' . $limit;
-	}
-	return $this->CurlRequest($url);
-    }
-
-    // Trades
-    function GetTradesLatest($symbol_id = null, $limit = null)
-    {
-	if ($symbol_id == null && $limit == null) {
-	    $url = 'https://rest.coinapi.io/v1/trades/latest';
-	} else if ($symbol_id == null && $limit != null) {
-	    $url = 'https://rest.coinapi.io/v1/trades/latest?limit=' . $limit;
-	} else if ($limit == null && $symbol_id != null) {
-	    $url = 'https://rest.coinapi.io/v1/trades/' . $symbol_id . '/latest';
-	} else {
-	    $url = 'https://rest.coinapi.io/v1/trades/' . $symbol_id . '/latest?limit=' . $limit;
-	}
-	return $this->CurlRequest($url);
-    }
-
-    function GetTradesHistory($symbol_id, $time_start, $time_end = null, $limit = null)
-    {
-	if ($symbol_id == null) {
-	    throw new InvalidArgumentException("symbol_id is required");
-	}
-	if ($time_start == null) {
-	    throw new InvalidArgumentException("time_start is required");
-	}
-	$time_start = $this->FormatDateTime($time_start);
-	if ($time_end == null && $limit != null) {
-	    $url = 'https://rest.coinapi.io/v1/trades/' . $symbol_id . '/history?time_start=' . $time_start . '&limit=' . $limit;
-	} else if ($limit == null && $time_end != null) {
-	    $time_end = $this->FormatDateTime($time_end);
-	    $url = 'https://rest.coinapi.io/v1/trades/' . $symbol_id . '/history?time_start=' . $time_start . '&time_end=' . $time_end;
-	    //$limit = '100';
-	} else if ($limit == null && $time_end == null) {
-	    $url = 'https://rest.coinapi.io/v1/trades/' . $symbol_id . '/history?time_start=' . $time_start;
-	} else {
-	    $time_end = $this->FormatDateTime($time_end);
-	    $url = 'https://rest.coinapi.io/v1/trades/' . $symbol_id . '/history?time_start=' . $time_start . '&time_end=' . $time_end . '&limit=' . $limit;
-	}
-	return $this->CurlRequest($url);
-    }
-
-    //Quotes
-    function GetQuotesCurrent($symbol_id = null)
-    {
-	if ($symbol_id == null) {
-	    $url = 'https://rest.coinapi.io/v1/quotes/current';
-	} else {
-	    $url = 'https://rest.coinapi.io/v1/quotes/' . $symbol_id . '/current';
-	}
-	return $this->CurlRequest($url);
-    }
-
-    function GetQuotesLatest($symbol_id = null, $limit = null)
-    {
-	if ($symbol_id == null && $limit == null) {
-	    $url = 'https://rest.coinapi.io/v1/quotes/latest';
-	} else if ($symbol_id == null && $limit != null) {
-	    $url = 'https://rest.coinapi.io/v1/quotes/latest?limit=' . $limit;
-	} else if ($limit == null && $symbol_id != null) {
-	    $url = 'https://rest.coinapi.io/v1/quotes/' . $symbol_id . '/latest';
-	} else {
-	    $url = 'https://rest.coinapi.io/v1/quotes/' . $symbol_id . '/latest?limit=' . $limit;
-	}
-	return $this->CurlRequest($url);
-    }
-
-    function GetQuotesHistory($symbol_id, $time_start, $time_end = null, $limit = null)
-    {
-	if ($symbol_id == null) {
-	    throw new InvalidArgumentException("symbol_id is required");
-	}
-	if ($time_start == null) {
-	    throw new InvalidArgumentException("time_start is required");
-	}
-	$time_start = $this->FormatDateTime($time_start);
-	if ($time_end == null && $limit != null) {
-	    $url = 'https://rest.coinapi.io/v1/quotes/' . $symbol_id . '/history?time_start=' . $time_start . '&limit=' . $limit;
-	} else if ($limit == null && $time_end != null) {
-	    $time_end = $this->FormatDateTime($time_end);
-	    $url = 'https://rest.coinapi.io/v1/quotes/' . $symbol_id . '/history?time_start=' . $time_start . '&time_end=' . $time_end;
-	} else if ($limit == null && $time_end == null) {
-	    $url = 'https://rest.coinapi.io/v1/quotes/' . $symbol_id . '/history?time_start=' . $time_start;
-	} else {
-	    $time_end = $this->FormatDateTime($time_end);
-	    $url = 'https://rest.coinapi.io/v1/quotes/' . $symbol_id . '/history?time_start=' . $time_start . '&time_end=' . $time_end . '&limit=' . $limit;
-	}
-	return $this->CurlRequest($url);
-    }
-
-    //Order Books
-    function GetOrderbookCurrent($symbol_id = null)
-    {
-	if ($symbol_id == null) {
-	    $url = 'https://rest.coinapi.io/v1/Orderbooks/current';
-	} else {
-	    $url = 'https://rest.coinapi.io/v1/Orderbooks/' . $symbol_id . '/current';
-	}
-	return $this->CurlRequest($url);
-    }
-
-    function GetOrderbookLatest($symbol_id, $limit = null)
-    {
-	if ($symbol_id == null) {
-	    throw new InvalidArgumentException("symbol_id is required");
-	}
-	if ($limit == null) {
-	    $url = 'https://rest.coinapi.io/v1/Orderbooks/' . $symbol_id . '/latest';
-	} else {
-	    $url = 'https://rest.coinapi.io/v1/Orderbooks/' . $symbol_id . '/latest?limit=' . $limit;
-	}
-	return $this->CurlRequest($url);
-    }
-
-    function GetOrderbookHistory($symbol_id, $time_start, $time_end = null, $limit = null)
-    {
-	if ($symbol_id == null) {
-	    throw new InvalidArgumentException("symbol_id is required");
-	}
-	if ($time_start == null) {
-	    throw new InvalidArgumentException("time_start is required");
-	}
-	$time_start = $this->FormatDateTime($time_start);
-	if ($time_end == null && $limit != null) {
-	    $url = 'https://rest.coinapi.io/v1/Orderbooks/' . $symbol_id . '/history?time_start=' . $time_start . '&limit=' . $limit;
-	} else if ($limit == null && $time_end != null) {
-	    $time_end = $this->FormatDateTime($time_end);
-	    $url = 'https://rest.coinapi.io/v1/Orderbooks/' . $symbol_id . '/history?time_start=' . $time_start . '&time_end=' . $time_end;
-	} else if ($limit == null && $time_end == null) {
-	    $url = 'https://rest.coinapi.io/v1/Orderbooks/' . $symbol_id . '/history?time_start=' . $time_start;
-	} else {
-	    $time_end = $this->FormatDateTime($time_end);
-	    $url = 'https://rest.coinapi.io/v1/Orderbooks/' . $symbol_id . '/history?time_start=' . $time_start . '&time_end=' . $time_end . '&limit=' . $limit;
-	}
-	return $this->CurlRequest($url);
-    }
-
-    //Twitter
-    function GetTwitterLatest($limit = null)
-    {
-	if ($limit == null) {
-	    $url = 'https://rest.coinapi.io/v1/twitter/latest';
-	} else {
-	    $url = 'https://rest.coinapi.io/v1/twitter/latest?limit=' . $limit;
-	}
-	return $this->CurlRequest($url);
-    }
-
-    function GetTwitterHistory($time_start, $time_end = null, $limit = null)
-    {
-	if ($time_start == null) {
-	    throw new InvalidArgumentException("time_start is required");
-	}
-	$time_start = $this->FormatDateTime($time_start);
-	if ($time_end == null && $limit != null) {
-	    $url = 'https://rest.coinapi.io/v1/twitter/history?time_start=' . $time_start . '&limit=' . $limit;
-	} else if ($limit == null && $time_end != null) {
-	    $time_end = $this->FormatDateTime($time_end);
-	    $url = 'https://rest.coinapi.io/v1/twitter/history?time_start=' . $time_start . '&time_end=' . $time_end;
-	} else if ($limit == null && $time_end == null) {
-	    $url = 'https://rest.coinapi.io/v1/twitter/history?time_start=' . $time_start;
-	} else {
-	    $time_end = $this->FormatDateTime($time_end);
-	    $url = 'https://rest.coinapi.io/v1/twitter/history?time_start=' . $time_start . '&time_end=' . $time_end . '&limit=' . $limit;
-	}
-	return $this->CurlRequest($url);
+	return $this->curlRequest($url);
     }
 
     //Formate DateTime Object
-    function FormatDateTime($DateTimeObj)
+    protected function formatDateTime($DateTimeObj)
     {
 	$timestring = $DateTimeObj->format('Y-m-d H:i:s.u');
 	$timestring = str_replace(' ', 'T', $timestring);
@@ -279,7 +36,7 @@ class CoinAPI extends Component
     }
 
     //Curl Request
-    function CurlRequest($url)
+    protected function curlRequest($url)
     {
 	$ch = \curl_init($url);
 

@@ -48,6 +48,9 @@ $config = [
 	    'class' => 'app\components\CoinAPI',
 	    'ApiKey' => 'BA786520-EE1E-47BD-84B6-CE4D52F36795',
 	],
+	'ratecache' => [
+	    'class' => 'app\components\RateCache',
+	],
     ],
     'params' => $params,
 ];
